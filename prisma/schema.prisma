@@ -1,0 +1,117 @@
+// Equinox — Round 2 database schema
+// See Round2.md for the product decisions behind each model.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Teams (players) — Section 5 (qualifier handoff) + Section 7 (magic-link login)
+// ---------------------------------------------------------------------------
+model Team {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  email     String? // sourced from Enigma registration; nullable in case some are missing
+  qualified Boolean  @default(false) // set via admin checklist confirm (Round2.md §5)
+
+  // Magic-link login (Round2.md §7)
+  magicToken          String?   @unique
+  magicTokenExpiresAt DateTime?
+  backupCode          String?   @unique // short human-readable fallback, e.g. "BLUE-7X4Q"
+  loggedInAt          DateTime?
+
+  examSession ExamSession?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Admin users — Section 8 (Tier 2 / Tier 3)
+// Tier 1 (question contributors) never log in here — Sheet access only.
+// ---------------------------------------------------------------------------
+model AdminUser {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  tier         Int // 2 = Content Admin, 3 = Event Admin (super admin)
+  createdAt    DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Question pool — Section 6 (Google Sheet import)
+// ---------------------------------------------------------------------------
+model Question {
+  id            String   @id @default(cuid())
+  text          String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctAnswer String // "A" | "B" | "C" | "D"
+  imageLinks    String? // comma-separated URLs, per Round2.md §6
+  active        Boolean  @default(true) // lets admin retire a bad question without deleting history
+  importedAt    DateTime @default(now())
+
+  answers TeamQuestionAnswer[]
+}
+
+// ---------------------------------------------------------------------------
+// Per-team exam session — Section 2 (pooled timer) + Section 3 (exam UI state)
+// ---------------------------------------------------------------------------
+model ExamSession {
+  id     String @id @default(cuid())
+  teamId String @unique
+  team   Team   @relation(fields: [teamId], references: [id])
+
+  startedAt   DateTime?
+  endsAt      DateTime? // startedAt + (questionsPerTeam * timePerQuestionSec)
+  submitted   Boolean   @default(false)
+  submittedAt DateTime?
+  autoSubmitted Boolean @default(false) // true if force-submitted by timeout (Round2.md §3)
+  score       Int       @default(0)
+
+  answers TeamQuestionAnswer[]
+}
+
+// ---------------------------------------------------------------------------
+// One row per question assigned to a team's session — randomized server-side
+// per Round2.md's "assignment done server-side, not client-side" decision
+// ---------------------------------------------------------------------------
+model TeamQuestionAnswer {
+  id            String      @id @default(cuid())
+  examSessionId String
+  examSession   ExamSession @relation(fields: [examSessionId], references: [id])
+  questionId    String
+  question      Question    @relation(fields: [questionId], references: [id])
+
+  order    Int // display order within this team's paper
+  selected String? // "A" | "B" | "C" | "D" | null
+  status   String  @default("not_visited")
+  // status values: not_visited | not_answered | answered | marked_for_review | answered_marked
+  isCorrect Boolean?
+
+  @@unique([examSessionId, questionId])
+  @@index([examSessionId])
+}
+
+// ---------------------------------------------------------------------------
+// Singleton settings row — Section 2 (admin-editable timing) + round control
+// ---------------------------------------------------------------------------
+model RoundSettings {
+  id String @id @default("singleton")
+
+  questionsPerTeam   Int @default(10) // Round2.md §1 — placeholder, admin-editable
+  timePerQuestionSec Int @default(90) // Round2.md §2 — default still pending, admin-editable
+
+  startGate String @default("manual") // "manual" | "all_logged_in" — Round2.md §2
+
+  roundStatus    String    @default("not_started") // not_started | in_progress | ended
+  roundStartedAt DateTime?
+  roundEndsAt    DateTime?
+}
