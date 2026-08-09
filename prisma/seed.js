@@ -45,6 +45,21 @@ async function main() {
   });
 
   console.log('Initialized Round Settings (questionsPerTeam:', settings.questionsPerTeam, ')');
+  console.log('Seeding 35 teams...');
+  const teamsData = Array.from({ length: 35 }).map((_, i) => ({
+    name: `Team ${i + 1}`,
+    email: `team${i + 1}@enigma.club`,
+    qualified: false,
+  }));
+
+  for (const team of teamsData) {
+    await prisma.team.upsert({
+      where: { name: team.name },
+      update: {},
+      create: team,
+    });
+  }
+
   console.log('Seeding completed successfully!');
 }
 

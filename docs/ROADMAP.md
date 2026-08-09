@@ -18,8 +18,8 @@ just proceeding.
 | 1. Scaffold + schema | Next.js project setup, Prisma schema (Team, AdminUser, Question, ExamSession, TeamQuestionAnswer, RoundSettings) | ✅ Done |
 | 2. Auth layer | Magic-link login (teams), email+password (admins), session guards (`requireTeam`, `requireAdmin`), backup codes (teams), Tier 2/3 enforcement | ✅ Done |
 | 3. Admin panel shell | Tier-gated navigation/layout shell and Dashboard (other sections added incrementally per phase) | ✅ Done |
-| 4. Round 1→2 handoff | Pre-loaded 35-team checklist UI, admin checks off 25 qualifiers, confirm-to-lock action | 🔶 Up next |
-| 5. Question pool import | Google Sheets API integration, parse preview, image link handling, Tier 2 confirm-to-commit into Postgres | ⬜ Not started |
+| 4. Round 1→2 handoff | Pre-loaded 35-team checklist UI, admin checks off 25 qualifiers, confirm-to-lock action | ✅ Done |
+| 5. Question pool import | Google Sheets API integration, parse preview, image link handling, Tier 2 confirm-to-commit into Postgres | 🔶 Up next |
 | 6. Exam session engine | Server-side random question assignment per team, pooled timer logic, admin-editable time-per-question, session persistence | ⬜ Not started |
 | 7. Exam UI | JEE-style interface — free navigation, palette, skip/clear, force-submit on timeout | ⬜ Not started |
 | 8. Scoring engine | +20/0 marking logic, answer submission handling | ⬜ Not started |
