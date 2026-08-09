@@ -116,6 +116,7 @@ team's job.
     import/preview.
   - Tier 3 — Event admins: full control (team checklist, timer, round
     start/stop, leaderboard).
+- **Admin Shell Pattern:** Incremental nav-per-phase architecture. The shell uses a single `nav-config.ts` source of truth. Nav items are rendered based on tier. Crucially, tier enforcement is handled server-side per route via `requireAdmin(minTier)`, ensuring proper distinction between "not logged in" (redirects to `/admin/login`) and "insufficient tier" (redirects to `/admin/access-denied`). Sections are added only when built; no pre-built placeholders.
 - **Question pool:** Structured Google Sheet (question, 4 options, correct
   answer, solution/explanation, image links). Images in a shared Google
   Drive folder ("Anyone with link can view"). Multi-image questions use

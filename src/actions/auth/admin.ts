@@ -33,7 +33,7 @@ export async function loginAdmin(email: string, password: string) {
     tier: admin.tier,
   });
 
-  redirect('/admin');
+  redirect('/admin/dashboard');
 }
 
 export async function requestAdminPasswordReset(email: string) {
@@ -112,7 +112,7 @@ export async function resetAdminPassword(token: string, email: string, newPasswo
   return { success: true };
 }
 
-export async function logout() {
+export async function logoutAdmin() {
   await clearSession();
   redirect('/admin/login');
 }

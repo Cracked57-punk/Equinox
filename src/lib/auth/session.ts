@@ -79,9 +79,9 @@ export async function requireTeam() {
 /**
  * Validates the current admin session and ensures minimum tier requirement.
  * Redirects to /admin/login if missing/invalid.
- * Throws an error if the authenticated admin does not meet minTier.
+ * Redirects to /admin/access-denied if the authenticated admin does not meet minTier.
  */
-export async function requireAdmin(minTier: number) {
+export async function requireAdmin(minTier?: number) {
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_COOKIE_NAME)?.value;
 
@@ -94,10 +94,8 @@ export async function requireAdmin(minTier: number) {
     redirect('/admin/login');
   }
 
-  if (payload.tier < minTier) {
-    // Explicitly reject lower tier admins trying to access higher tier routes.
-    // e.g. Tier 2 admin trying to access a Tier 3 only route.
-    throw new Error(`Unauthorized: Minimum Tier ${minTier} required. Your tier is ${payload.tier}.`);
+  if (minTier !== undefined && payload.tier < minTier) {
+    redirect('/admin/access-denied');
   }
 
   return payload;

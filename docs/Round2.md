@@ -206,6 +206,7 @@ platform** (high risk, small trusted set).
   from "where's logic" at a glance.
   - `src/app/` — routes only (`page.tsx`, `layout.tsx`, `route.ts`).
     No business logic or Server Actions live here.
+    - **Note on Admin routes:** Future admin phase pages (4-10) must go inside `src/app/admin/(protected)/<section>/page.tsx` so they are wrapped by the authenticated shell layout. Sibling unauthenticated routes (login, forgot-password, reset) stay outside the `(protected)` folder.
   - `src/actions/` — Server Actions, grouped by domain. Team and
     admin auth are kept as **separate files**
     (`actions/auth/team.ts`, `actions/auth/admin.ts`), since they're
@@ -215,6 +216,7 @@ platform** (high risk, small trusted set).
   - `src/components/` — React UI, grouped by domain
     (`components/admin/`, `components/team/`, `components/ui/` for
     shared generic primitives).
+    - **Admin Shell nav-config:** The Admin panel navigation is driven by a single source of truth at `src/components/admin/nav-config.ts`. When a future agent session adds a Phase 4+ page, they should extend `nav-config.ts` rather than inventing a new pattern or pre-building placeholders.
   - `src/lib/` — non-action business/utility logic. General infra
     (`prisma.ts` — Prisma client, `email.ts` — Resend wrapper) stays
     at the top level; auth-specific logic is grouped under
