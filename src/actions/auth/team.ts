@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma';
 import { sendMagicLinkEmail } from '@/lib/email';
 import { setTeamSession } from '@/lib/auth/session';
-import { normalizeBackupCode } from '@/lib/backup-code';
+import { normalizeBackupCode } from '@/lib/auth/backup-code';
 import { generateSecureToken } from '@/lib/auth/tokens';
 import { redirect } from 'next/navigation';
 

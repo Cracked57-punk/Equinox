@@ -215,10 +215,15 @@ platform** (high risk, small trusted set).
   - `src/components/` — React UI, grouped by domain
     (`components/admin/`, `components/team/`, `components/ui/` for
     shared generic primitives).
-  - `src/lib/` — non-action business/utility logic: Prisma client,
-    Resend wrapper, `lib/auth/session.ts` (JWT cookie helpers,
-    `requireTeam`/`requireAdmin` guards), `lib/auth/tokens.ts`
-    (magic-link/reset token generation and hashing).
+  - `src/lib/` — non-action business/utility logic. General infra
+    (`prisma.ts` — Prisma client, `email.ts` — Resend wrapper) stays
+    at the top level; auth-specific logic is grouped under
+    `src/lib/auth/`:
+    - `session.ts` — JWT cookie helpers, `requireTeam`/`requireAdmin`
+      guards
+    - `tokens.ts` — magic-link/reset token generation and hashing
+    - `jwt.ts` — token sign/verify logic (`jose` library calls)
+    - `backup-code.ts` — team backup code generation/validation
   - `src/types/` — shared TypeScript types (e.g. JWT payload
     interfaces).
 - **Docs-must-be-committed rule:** planning documents (`format.md`,

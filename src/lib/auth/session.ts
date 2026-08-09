@@ -6,7 +6,7 @@ import {
   verifyTeamToken,
   signAdminToken,
   verifyAdminToken,
-} from '@/lib/jwt';
+} from '@/lib/auth/jwt';
 import { TeamJwtPayload, AdminJwtPayload } from '@/types/auth';
 
 const TEAM_COOKIE_NAME = 'equinox_team_session';
