@@ -3,19 +3,7 @@ import { SignJWT, jwtVerify } from 'jose';
 const JWT_SECRET = process.env.JWT_SECRET || 'equinox-secret-key-change-in-production';
 const encodedKey = new TextEncoder().encode(JWT_SECRET);
 
-export interface TeamJwtPayload {
-  teamId: string;
-  name: string;
-  type: 'team';
-}
-
-export interface AdminJwtPayload {
-  adminId: string;
-  name: string;
-  email: string;
-  tier: number;
-  type: 'admin';
-}
+import { TeamJwtPayload, AdminJwtPayload } from '@/types/auth';
 
 /**
  * Signs a JWT token for a team session. Default expiration: 12 hours.

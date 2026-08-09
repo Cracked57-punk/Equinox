@@ -194,7 +194,53 @@ platform** (high risk, small trusted set).
 
 ---
 
-## 9. Build Priority
+## 9. Repository & Tooling
+
+- **Repository:** Private GitHub repo —
+  `github.com/Cracked57-punk/Equinox`.
+- **Directory convention (confirmed):** `src/app` for Next.js App
+  Router. A stray root-level `app/` conflict was found early in the
+  build and resolved by deletion — `src/app` is the only routing tree.
+- **Folder structure (confirmed):** structured for readability —
+  anyone new to the codebase should be able to tell "where's a URL"
+  from "where's logic" at a glance.
+  - `src/app/` — routes only (`page.tsx`, `layout.tsx`, `route.ts`).
+    No business logic or Server Actions live here.
+  - `src/actions/` — Server Actions, grouped by domain. Team and
+    admin auth are kept as **separate files**
+    (`actions/auth/team.ts`, `actions/auth/admin.ts`), since they're
+    two functionally distinct auth systems, not one — mixing them in
+    a single file previously contributed to confusion during the
+    admin-auth build.
+  - `src/components/` — React UI, grouped by domain
+    (`components/admin/`, `components/team/`, `components/ui/` for
+    shared generic primitives).
+  - `src/lib/` — non-action business/utility logic: Prisma client,
+    Resend wrapper, `lib/auth/session.ts` (JWT cookie helpers,
+    `requireTeam`/`requireAdmin` guards), `lib/auth/tokens.ts`
+    (magic-link/reset token generation and hashing).
+  - `src/types/` — shared TypeScript types (e.g. JWT payload
+    interfaces).
+- **Docs-must-be-committed rule:** planning documents (`format.md`,
+  `Round2.md`, `PROJECT_CONTEXT.md`) live in `/docs` and must be
+  pushed to GitHub, not kept only locally — a locally-only doc is a
+  single point of failure if something happens to the machine it's
+  on.
+- **`.env` never-commit rule:** `.env` is never committed;
+  `.env.example` is the committed placeholder template. `.gitignore`
+  needs a `!.env.example` exception line so the placeholder itself
+  isn't excluded along with the real file.
+- **Secrets handling (confirmed):** the coding agent (Antigravity)
+  must never view, print, or log the contents of `.env` or any
+  secret value (DB URL, API keys, admin passwords, etc.). It may run
+  commands that use env vars internally without issue. Local `.env`
+  holds throwaway dev-only secrets; real production secrets are set
+  directly in Vercel's dashboard at deploy time, not stored in any
+  file the agent works from.
+
+---
+
+## 10. Build Priority
 
 **Phase 1 (current):** Round 2 portal — admin panel (question pool
 management via Sheet import/preview/confirm, time-per-question setting,

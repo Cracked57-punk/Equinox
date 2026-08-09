@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
-import { setTeamSession } from '@/lib/auth';
+import { setTeamSession } from '@/lib/auth/session';
+import { hashToken } from '@/lib/auth/tokens';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Hash the incoming raw token to compare with stored hash
-  const incomingTokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+  const incomingTokenHash = hashToken(rawToken);
 
   if (team.magicToken !== incomingTokenHash) {
     return NextResponse.json({ error: 'Invalid login link' }, { status: 400 });

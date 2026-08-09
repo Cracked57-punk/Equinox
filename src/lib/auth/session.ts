@@ -1,14 +1,13 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { prisma } from './prisma';
+import { prisma } from '@/lib/prisma';
 import {
   signTeamToken,
   verifyTeamToken,
   signAdminToken,
   verifyAdminToken,
-  TeamJwtPayload,
-  AdminJwtPayload,
-} from './jwt';
+} from '@/lib/jwt';
+import { TeamJwtPayload, AdminJwtPayload } from '@/types/auth';
 
 const TEAM_COOKIE_NAME = 'equinox_team_session';
 const ADMIN_COOKIE_NAME = 'equinox_admin_session';

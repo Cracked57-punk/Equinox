@@ -30,6 +30,16 @@ with full context instead of the human re-explaining from scratch.
 - **Don't touch schema, auth, or scoring logic in Autopilot/parallel mode.**
   These are interdependent — sequence changes, don't run them concurrently
   across multiple agent sessions.
+- **Never view, `cat`, or print the contents of `.env`, or echo/log any
+  secret env var's value** (DB URL, Resend API key, JWT secret, admin
+  passwords, etc.). Running commands that use these vars internally
+  (e.g. `node prisma/seed.js`) is fine — printing or reading them
+  directly is not. If you need to confirm a var is set, check truthiness
+  only (e.g. log `true`/`false`, never the value). Local `.env` holds
+  throwaway dev-only values; the real production secrets are set
+  directly in Vercel's dashboard at deploy time and are not something
+  you'll ever need to see. If a task seems to require the actual secret
+  value, stop and ask the human to run that step themselves.
 - **Update `Round2.md` / `format.md`** (or ask the human to) whenever a new
   decision is locked, so this stays a living source of truth.
 
@@ -88,6 +98,13 @@ team's job.
     comment reading "corrected: passwordless, same as teams" were found
     in `AdminUser`, with no human sign-off). That drift is now
     superseded — password-based login is final.
+- **Repository & folder structure:** Private GitHub repo
+  (`github.com/Cracked57-punk/Equinox`), `src/app` is the only routing
+  tree (routes only — no logic). Server Actions live in `src/actions/`,
+  grouped by domain (team/admin auth kept as separate files). UI in
+  `src/components/`, non-action logic in `src/lib/`, shared types in
+  `src/types/`. Full detail and rationale in `Round2.md` §9 — check
+  there before adding a new file if you're unsure where it belongs.
 - **Round 1 → Round 2 handoff:** Pre-loaded checklist of all 35 team names
   entered before Round 1 starts; admin checks off the 25 qualifiers after.
   No typing/parsing needed.
