@@ -46,6 +46,11 @@ export async function clearSession() {
   cookieStore.delete(ADMIN_COOKIE_NAME);
 }
 
+export async function clearTeamSession() {
+  const cookieStore = await cookies();
+  cookieStore.delete(TEAM_COOKIE_NAME);
+}
+
 /**
  * Validates the current team session.
  * Redirects to /login if invalid or missing.
