@@ -35,12 +35,18 @@ model Team {
 // Tier 1 (question contributors) never log in here — Sheet access only.
 // ---------------------------------------------------------------------------
 model AdminUser {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
   passwordHash String
-  tier         Int // 2 = Content Admin, 3 = Event Admin (super admin)
-  createdAt    DateTime @default(now())
+  tier      Int // 2 = Content Admin, 3 = Event Admin (super admin)
+
+  // Admin self-service password reset
+  resetTokenHash      String?   @unique
+  resetTokenExpiresAt DateTime?
+  loggedInAt          DateTime?
+
+  createdAt DateTime @default(now())
 }
 
 // ---------------------------------------------------------------------------

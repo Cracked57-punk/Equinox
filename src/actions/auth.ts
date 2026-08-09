@@ -3,7 +3,7 @@
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
-import { sendMagicLinkEmail } from '@/lib/email';
+import { sendMagicLinkEmail, sendAdminPasswordResetEmail } from '@/lib/email';
 import { setTeamSession, setAdminSession, clearSession } from '@/lib/auth';
 import { normalizeBackupCode } from '@/lib/backup-code';
 import { redirect } from 'next/navigation';
@@ -41,7 +41,7 @@ export async function requestMagicLink(email: string) {
   });
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-  const magicLinkUrl = `${baseUrl}/auth/verify?token=${rawToken}&email=${encodeURIComponent(normalizedEmail)}`;
+  const magicLinkUrl = `${baseUrl}/api/auth/verify?token=${rawToken}&email=${encodeURIComponent(normalizedEmail)}`;
 
   const emailResult = await sendMagicLinkEmail({
     to: normalizedEmail,
@@ -110,6 +110,86 @@ export async function loginAdmin(email: string, password: string) {
   });
 
   redirect('/admin');
+}
+
+export async function requestAdminPasswordReset(email: string) {
+  if (!email || typeof email !== 'string') {
+    return { success: false, error: 'Valid email is required.' };
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const admin = await prisma.adminUser.findUnique({
+    where: { email: normalizedEmail },
+  });
+
+  if (!admin) {
+    // Return success to avoid email enumeration
+    return { success: true };
+  }
+
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+  // Token expires in 30 minutes
+  const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
+  await prisma.adminUser.update({
+    where: { id: admin.id },
+    data: {
+      resetTokenHash: tokenHash,
+      resetTokenExpiresAt: expiresAt,
+    },
+  });
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const resetUrl = `${baseUrl}/admin/reset?token=${rawToken}&email=${encodeURIComponent(normalizedEmail)}`;
+
+  const emailResult = await sendAdminPasswordResetEmail({
+    to: normalizedEmail,
+    adminName: admin.name,
+    resetUrl: resetUrl,
+  });
+
+  if (!emailResult.success) {
+    return { success: false, error: 'Failed to send reset email.' };
+  }
+
+  return { success: true };
+}
+
+export async function resetAdminPassword(token: string, email: string, newPassword: string) {
+  if (!token || !email || !newPassword) {
+    return { success: false, error: 'Missing required fields.' };
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+  const admin = await prisma.adminUser.findUnique({
+    where: { email: normalizedEmail },
+  });
+
+  if (!admin || !admin.resetTokenHash || !admin.resetTokenExpiresAt) {
+    return { success: false, error: 'Invalid or expired reset token.' };
+  }
+
+  if (admin.resetTokenHash !== tokenHash || admin.resetTokenExpiresAt < new Date()) {
+    return { success: false, error: 'Invalid or expired reset token.' };
+  }
+
+  const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+  await prisma.adminUser.update({
+    where: { id: admin.id },
+    data: {
+      passwordHash: newPasswordHash,
+      resetTokenHash: null,
+      resetTokenExpiresAt: null,
+    },
+  });
+
+  return { success: true };
 }
 
 export async function logout() {

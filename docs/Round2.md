@@ -150,12 +150,33 @@ platform** (high risk, small trusted set).
 - Highest-stakes tier (wrong timer, premature start, etc.) — kept as small
   and trusted as possible.
 
+**Admin login mechanism (confirmed):**
+- Individual named accounts per admin, for both Tier 2 and Tier 3 — no
+  shared tier-wide password, so live actions stay attributable to a
+  specific person.
+- **Email + password login** (bcrypt-hashed passwords), *not* magic-link.
+  This is a deliberate departure from team login: admins are a small,
+  repeat-use group who need fast, dependency-free access during a live
+  event, whereas a magic link introduces an email-deliverability
+  dependency (Resend latency, spam filters, venue wifi) at exactly the
+  moment stakes are highest (premature start, wrong timer, etc.).
+- **Password recovery:** self-serve — a reset link is emailed to the
+  admin's registered email address. This reuses the Resend
+  infrastructure already built for team magic-links, but as a distinct
+  password-reset token flow (separate token type/table from the team
+  login token, since the two are functionally different: one logs you
+  in directly, the other lets you set a new password).
+- **No backup codes for admins.** Backup codes remain a team-only
+  mechanism (for teams without email access). For admins, self-serve
+  email reset was judged sufficient — a third fallback (backup code) adds
+  a code to generate/store/remember without meaningfully improving
+  reliability over password + email reset. Can be revisited as a future
+  addition if reset-via-email proves insufficient in practice.
+- Teams are **unaffected** by this — team login stays magic-link +
+  backup-code fallback, unchanged.
+
 **Open sub-decisions:**
 - Exact headcount for Tier 2 and Tier 3 — **pending**
-- Login mechanism — **pending**, leaning toward individual named
-  accounts per person (even within a small Tier 3 group) rather than one
-  shared password per tier, so actions are attributable if something goes
-  wrong live
 
 ---
 
@@ -168,34 +189,12 @@ platform** (high risk, small trusted set).
 | Timing | Round start gate: all-logged-in vs manual trigger | Pending decision |
 | Question pool | Image naming convention (exact string) | Pending |
 | Access tiers | Tier 2 / Tier 3 headcount | Pending |
-| Access tiers | Login mechanism (individual vs shared credentials) | Leaning: individual named accounts |
-| — | Team login/credential mechanism (players logging into exam) | Pending — not yet discussed |
+| Access tiers | Admin login mechanism | ✅ Confirmed: individual email+password (bcrypt) per admin, self-serve reset via registered email, no backup codes for admins |
+| — | Team login/credential mechanism (players logging into exam) | ✅ Confirmed: magic-link + backup code fallback (see Section 5/7 history) |
 
 ---
 
-## 9. Repository & Tooling (confirmed)
-
-- **Repo:** `github.com/Cracked57-punk/Equinox` — kept **private** (correct
-  call given live auth/scoring logic).
-- **Execution environment:** Google Antigravity IDE + Antigravity 2.0.
-  Agent-assisted mode, Planning mode for structural changes. Architecture/
-  product decisions continue to be made in planning chat first — Antigravity
-  is execution-only, not decision-making.
-- **App Router convention — confirmed: `src/app`**, not root-level `app/`.
-  A duplicate `app/` + `src/app/` briefly existed from initial scaffolding
-  and caused a routing-conflict risk; root `app/` has been deleted. Do not
-  recreate a root-level `app/` folder.
-- **`docs/` folder must be committed to the repo.** As of last check,
-  `Round2.md` / `format.md` / `PROJECT_CONTEXT.md` existed only locally and
-  were not yet pushed — this is a single point of failure and should be
-  fixed promptly.
-- **`.env` / `.env.local` must never be committed** — real DB connection
-  strings, magic-link email service keys, Google Sheets API keys, Vercel
-  tokens all live here. `.env.example` (placeholders only) is fine to push.
-
----
-
-## 10. Build Priority
+## 9. Build Priority
 
 **Phase 1 (current):** Round 2 portal — admin panel (question pool
 management via Sheet import/preview/confirm, time-per-question setting,

@@ -71,3 +71,67 @@ export async function sendMagicLinkEmail({
     return { success: false, error: message };
   }
 }
+
+export interface SendAdminResetOptions {
+  to: string;
+  adminName: string;
+  resetUrl: string;
+}
+
+export async function sendAdminPasswordResetEmail({
+  to,
+  adminName,
+  resetUrl,
+}: SendAdminResetOptions): Promise<{ success: boolean; error?: string }> {
+  if (!resend) {
+    console.log('\n================ ADMIN RESET EMAIL (DEV MODE) ================');
+    console.log(`To: ${to} (Admin: ${adminName})`);
+    console.log(`Reset URL: ${resetUrl}`);
+    console.log('==============================================================\n');
+    return { success: true };
+  }
+
+  try {
+    const { error } = await resend.emails.send({
+      from: fromEmail,
+      to,
+      subject: `Equinox — Admin Password Reset for ${adminName}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #090d16; color: #f3f4f6; padding: 24px; }
+              .container { max-width: 500px; margin: 0 auto; background-color: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 32px; text-align: center; }
+              .h1 { font-size: 24px; font-weight: bold; margin-bottom: 12px; color: #38bdf8; }
+              .btn { display: inline-block; background-color: #0284c7; color: #ffffff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 24px 0; }
+              .footer { font-size: 12px; color: #9ca3af; margin-top: 24px; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="h1">Admin Password Reset</div>
+              <p>Hello <strong>${adminName}</strong>,</p>
+              <p>Click the button below to reset your Equinox admin password. This link expires in 30 minutes.</p>
+              <a href="${resetUrl}" class="btn">Reset Password</a>
+              <p class="footer">If you did not request this email, please ignore it.</p>
+            </div>
+          </body>
+        </html>
+      `,
+    });
+
+    if (error) {
+      console.error('Resend email error:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error sending email';
+    console.error('Failed to send admin reset email:', err);
+    return { success: false, error: message };
+  }
+}
+

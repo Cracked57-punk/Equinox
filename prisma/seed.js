@@ -1,31 +1,37 @@
 const { PrismaClient } = require('@prisma/client');
+const { PrismaPg } = require('@prisma/adapter-pg');
 const bcrypt = require('bcryptjs');
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('Seeding initial data...');
 
-  // Create initial Tier 3 Event Admin
   const adminEmail = process.env.INITIAL_ADMIN_EMAIL || 'admin@enigma.club';
-  const adminPassword = process.env.INITIAL_ADMIN_PASSWORD || 'password123';
-  
-  const passwordHash = await bcrypt.hash(adminPassword, 10);
+  const rawPassword = process.env.INITIAL_ADMIN_PASSWORD;
+
+  if (!rawPassword) {
+    throw new Error('INITIAL_ADMIN_PASSWORD is not set in .env — seed cannot create the initial admin without it');
+  }
+
+  const passwordHash = await bcrypt.hash(rawPassword, 10);
 
   const admin = await prisma.adminUser.upsert({
     where: { email: adminEmail },
-    update: {},
+    update: {
+      passwordHash,
+    },
     create: {
       name: 'Super Admin',
       email: adminEmail,
       passwordHash,
-      tier: 3, // Event Admin tier
+      tier: 3,
     },
   });
 
   console.log('Created initial Tier 3 Admin:', admin.email);
 
-  // Initialize singleton RoundSettings if it doesn't exist
   const settings = await prisma.roundSettings.upsert({
     where: { id: 'singleton' },
     update: {},
@@ -39,7 +45,6 @@ async function main() {
   });
 
   console.log('Initialized Round Settings (questionsPerTeam:', settings.questionsPerTeam, ')');
-
   console.log('Seeding completed successfully!');
 }
 

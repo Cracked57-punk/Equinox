@@ -12,6 +12,13 @@ with full context instead of the human re-explaining from scratch.
   are made *before* code is written. If you (the agent) are about to make a
   non-trivial design choice that isn't already locked below, **stop and ask,
   don't assume.**
+- **Do not silently revert or "correct" a locked decision below** — even if
+  older code, comments, or an earlier version of this doc suggests
+  otherwise. This has happened before on the admin login mechanism (see
+  Section 2) and caused wasted work. If something in the codebase conflicts
+  with what's written here, **this document wins** — flag the conflict to
+  the human, don't resolve it by picking whichever side the old code
+  already leans toward.
 - **Push back, don't just execute.** If a request conflicts with a decision
   already locked in this doc, or seems like a bad idea, say so before
   implementing it.
@@ -49,12 +56,38 @@ team's job.
   Supabase, deployed on Vercel (free tier).
 - **Live sync:** Polling for timer/leaderboard updates — **not**
   WebSockets.
-- **Team login:** Magic-link email to each team's registered Enigma email.
-  One click, no typed credentials. Tier 3 admins have a fallback panel
+- **Team login (teams only — see below for admins, they are different):**
+  Magic-link email to each team's registered Enigma email. One click, no
+  typed credentials. Tier 3 admins have a Team Credentials fallback panel
   (copy-link, resend-email, short human-readable backup code) for teams
   without email access.
   - ❌ Rejected: physical credential slips (logistics), password = team
     name (spoofable, names are public).
+- **Admin login (Tier 2 + Tier 3 — CONFIRMED, do not revert to
+  magic-link):**
+  - Individual named accounts per admin — **not** a shared tier-wide
+    password, so live actions stay attributable to a specific person.
+  - **Email + password login (bcrypt-hashed passwords).** This is
+    deliberately different from team login. Admins are a small,
+    repeat-use group who need fast, dependency-free access during a live
+    event; a magic link would add an email-deliverability dependency
+    (Resend latency, spam filters, venue wifi) at exactly the moment
+    stakes are highest (premature start, wrong timer, etc.).
+  - **Password recovery:** self-serve reset link emailed to the admin's
+    registered email. Reuses the Resend infrastructure already built for
+    team magic-links, but as a **distinct password-reset token flow**
+    (separate token/table from the team login token — one logs you in
+    directly, the other lets you set a new password).
+  - **No backup codes for admins.** Backup codes are team-only. Password
+    + self-serve email reset was judged sufficient for admins; a backup
+    code would be a third fallback without meaningfully improving
+    reliability. May be revisited later as a future addition — not
+    currently in scope.
+  - This decision was made after the codebase had already drifted toward
+    magic-link for admins on its own (a stray `magicToken` field and a
+    comment reading "corrected: passwordless, same as teams" were found
+    in `AdminUser`, with no human sign-off). That drift is now
+    superseded — password-based login is final.
 - **Round 1 → Round 2 handoff:** Pre-loaded checklist of all 35 team names
   entered before Round 1 starts; admin checks off the 25 qualifiers after.
   No typing/parsing needed.
@@ -91,6 +124,11 @@ team's job.
 - Client-side question randomization
 - Raw CSV or free-form doc for question pool delivery (no image support /
   high parse-failure risk)
+- Magic-link login for admins (admins use email + password instead — see
+  Section 2). Team magic-link is unaffected and correct — this rejection
+  applies to admins only.
+- Shared tier-wide password for admins (must be individual accounts)
+- Backup codes for admins (team-only mechanism)
 
 ## 4. Open items still pending (ask the human, don't guess)
 
@@ -101,7 +139,6 @@ team's job.
 | Timing | Round start gate: all-logged-in vs manual trigger |
 | Question pool | Image naming convention (exact string) |
 | Access tiers | Tier 2 / Tier 3 exact headcount |
-| Access tiers | Login mechanism for admins — leaning individual named accounts, not shared |
 
 ## 5. Out of scope for now (context only)
 
@@ -118,6 +155,7 @@ Don't build toward these unless explicitly instructed.
 Planning and architectural decisions for this project happen in a separate
 Claude conversation (chat-based, not this IDE). This IDE/agent is used for
 **execution** once a decision is already locked in `Round2.md` /
-`format.md`. If you're an agent reading this and a request seems to
-involve a decision that isn't captured above, that's a sign to pause and
-ask the human to confirm it's actually been decided — not to invent one.
+`format.md` / this file. If you're an agent reading this and a request
+seems to involve a decision that isn't captured above, that's a sign to
+pause and ask the human to confirm it's actually been decided — not to
+invent one.
