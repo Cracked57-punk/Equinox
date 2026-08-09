@@ -86,6 +86,8 @@ This is a smaller, lower-risk problem than a full name+score transfer.
   - After Round 1 concludes, admin opens a checklist/multi-select UI
     showing all 35 team names and simply **checks off the 25 that
     qualified**
+  - The UI uses **split visual boxes** (Qualifiers and Disqualified) and 
+    allows the admin to dynamically set the target number of qualifiers.
   - No typing, no pasting, no name-matching/parsing — eliminates typo
     risk entirely since names are selected from a known list, not
     re-entered
@@ -112,13 +114,16 @@ vector images, standard 4-option MCQ format.
     head can create it), as long as it's **one shared folder** with
     consistent edit access for contributors and "Anyone with the link can
     view" sharing so the import tool can fetch images
-  - Naming convention: **confirmed — question-setting team will follow
-    whatever convention is set** (exact convention string still TBD)
+  - Naming convention: **Resolved — we just use the raw Google Drive/Image
+    URLs directly in the sheet** (no rigid naming convention needed).
   - Multi-image questions: **confirmed — multiple links, comma-separated,
     in the same Image Link cell**
   - Reliable to parse (already tabular), easy to bulk-review before
     import, reuses the same preview-then-confirm pattern used for the
     Round 1 qualifier checklist
+  - **Manual CRUD fallback:** A UI has also been built to allow admins to
+    manually add, edit, and soft-delete individual questions without having
+    to re-import the entire sheet (as bulk import is a destructive wipe).
 
 ---
 
@@ -187,7 +192,6 @@ platform** (high risk, small trusted set).
 | Format | Exact number of questions per team (placeholder: 10) | Pending |
 | Timing | Exact time-per-question default value | Pending (admin-editable regardless) |
 | Timing | Round start gate: all-logged-in vs manual trigger | Pending decision |
-| Question pool | Image naming convention (exact string) | Pending |
 | Access tiers | Tier 2 / Tier 3 headcount | Pending |
 | Access tiers | Admin login mechanism | ✅ Confirmed: individual email+password (bcrypt) per admin, self-serve reset via registered email, no backup codes for admins |
 | — | Team login/credential mechanism (players logging into exam) | ✅ Confirmed: magic-link + backup code fallback (see Section 5/7 history) |
