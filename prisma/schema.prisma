@@ -31,15 +31,13 @@ model Team {
 }
 
 // ---------------------------------------------------------------------------
-// Admin users — Section 8 (Tier 2 / Tier 3)
-// Tier 1 (question contributors) never log in here — Sheet access only.
+// Admin users — single role, full access to all admin features
 // ---------------------------------------------------------------------------
 model AdminUser {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
   passwordHash String
-  tier      Int // 2 = Content Admin, 3 = Event Admin (super admin)
 
   // Admin self-service password reset
   resetTokenHash      String?   @unique

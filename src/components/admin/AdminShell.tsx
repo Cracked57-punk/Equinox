@@ -10,7 +10,6 @@ type AdminPayload = {
   adminId: string;
   name: string;
   email: string;
-  tier: number;
 };
 
 export default function AdminShell({
@@ -22,9 +21,6 @@ export default function AdminShell({
 }) {
   const pathname = usePathname();
 
-  // Filter navigation items based on the admin's tier
-  const allowedNavItems = adminNavConfig.filter((item) => admin.tier >= item.minTier);
-
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 text-gray-900">
       {/* Sidebar */}
@@ -33,7 +29,7 @@ export default function AdminShell({
           <h1 className="text-xl font-bold tracking-tight">Equinox Admin</h1>
         </div>
         <nav className="flex-1 p-4 space-y-2">
-          {allowedNavItems.map((item) => {
+          {adminNavConfig.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
               <Link
@@ -59,7 +55,7 @@ export default function AdminShell({
           <div className="flex items-center space-x-4">
             <span className="font-semibold text-gray-800">{admin.name}</span>
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-              Tier {admin.tier}
+              Admin
             </span>
           </div>
           <button

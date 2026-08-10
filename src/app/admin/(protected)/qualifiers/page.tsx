@@ -7,8 +7,8 @@ export const metadata = {
 };
 
 export default async function AdminQualifiersPage() {
-  // Enforce Tier 3 access server-side before rendering
-  await requireAdmin(3);
+  // Enforce admin access server-side before rendering
+  await requireAdmin();
 
   const settings = await prisma.roundSettings.findUnique({
     where: { id: 'singleton' },

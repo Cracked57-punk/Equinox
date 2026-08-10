@@ -61,7 +61,7 @@ export async function verifyAdminToken(token: string): Promise<AdminJwtPayload |
       algorithms: ['HS256'],
     });
 
-    if (payload.type !== 'admin' || typeof payload.adminId !== 'string' || typeof payload.tier !== 'number') {
+    if (payload.type !== 'admin' || typeof payload.adminId !== 'string') {
       return null;
     }
 

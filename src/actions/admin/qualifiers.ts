@@ -5,8 +5,8 @@ import { requireAdmin } from '@/lib/auth/session';
 import { revalidatePath } from 'next/cache';
 
 export async function saveQualifiers(teamIds: string[]) {
-  // Enforce Tier 3 access
-  await requireAdmin(3);
+  // Enforce admin access
+  await requireAdmin();
 
   if (!Array.isArray(teamIds)) {
     return { success: false, error: 'Invalid input' };

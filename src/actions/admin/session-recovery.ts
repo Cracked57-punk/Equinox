@@ -4,8 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth/session';
 
 export async function recoverTeamSession(teamId: string) {
-  // Ensure only Tier 3 Event Admins can trigger a recovery
-  await requireAdmin(3);
+  // Ensure only admins can trigger a recovery
+  await requireAdmin();
 
   const session = await prisma.examSession.findUnique({
     where: { teamId },

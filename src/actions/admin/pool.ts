@@ -27,7 +27,7 @@ function extractSheetId(url: string): string | null {
 }
 
 export async function fetchSheetPreview(url: string): Promise<FetchPreviewResult> {
-  await requireAdmin(2); // Tier 2 minimum
+  await requireAdmin();
 
   try {
     let sheetId = url;
@@ -112,7 +112,7 @@ export async function fetchSheetPreview(url: string): Promise<FetchPreviewResult
 }
 
 export async function commitQuestionPool(rows: ParsedQuestion[]) {
-  await requireAdmin(2);
+  await requireAdmin();
 
   const validRows = rows.filter((r) => r.isValid);
   if (validRows.length === 0) {
@@ -145,7 +145,7 @@ export async function commitQuestionPool(rows: ParsedQuestion[]) {
 }
 
 export async function addQuestion(data: Omit<ParsedQuestion, 'isValid' | 'errors'>) {
-  await requireAdmin(2);
+  await requireAdmin();
   try {
     await prisma.question.create({
       data: {
@@ -168,7 +168,7 @@ export async function addQuestion(data: Omit<ParsedQuestion, 'isValid' | 'errors
 }
 
 export async function updateQuestion(id: string, data: Omit<ParsedQuestion, 'isValid' | 'errors'>) {
-  await requireAdmin(2);
+  await requireAdmin();
   try {
     await prisma.question.update({
       where: { id },
@@ -191,7 +191,7 @@ export async function updateQuestion(id: string, data: Omit<ParsedQuestion, 'isV
 }
 
 export async function deleteQuestion(id: string) {
-  await requireAdmin(2);
+  await requireAdmin();
   try {
     // Soft delete to prevent breaking active/past exam sessions
     await prisma.question.update({

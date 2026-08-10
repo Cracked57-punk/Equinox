@@ -4,7 +4,7 @@ import QuestionPoolManager from '@/components/admin/QuestionPoolManager';
 import QuestionList from '@/components/admin/QuestionList';
 
 export default async function QuestionPoolPage() {
-  await requireAdmin(2);
+  await requireAdmin();
 
   const activeQuestions = await prisma.question.findMany({
     where: { active: true },

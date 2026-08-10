@@ -30,7 +30,6 @@ export async function loginAdmin(email: string, password: string) {
     adminId: admin.id,
     name: admin.name,
     email: admin.email,
-    tier: admin.tier,
   });
 
   redirect('/admin/dashboard');

@@ -68,15 +68,19 @@ team's job.
   WebSockets.
 - **Team login (teams only — see below for admins, they are different):**
   Magic-link email to each team's registered Enigma email. One click, no
-  typed credentials. Tier 3 admins have a Team Credentials fallback panel
+  typed credentials. Admins have a Team Credentials fallback panel
   (copy-link, resend-email, short human-readable backup code) for teams
   without email access.
   - ❌ Rejected: physical credential slips (logistics), password = team
     name (spoofable, names are public).
-- **Admin login (Tier 2 + Tier 3 — CONFIRMED, do not revert to
+- **Admin login (single role, full access — CONFIRMED, do not revert to
   magic-link):**
-  - Individual named accounts per admin — **not** a shared tier-wide
-    password, so live actions stay attributable to a specific person.
+  - Individual named accounts per admin — **not** a shared password, so
+    live actions stay attributable to a specific person.
+  - **Single admin role** — all admins have full access to every feature
+    (question pool, team qualifiers, timer, round control, leaderboard).
+    The previous Tier 2/Tier 3 hierarchy was removed as unnecessary
+    complexity for our team size.
   - **Email + password login (bcrypt-hashed passwords).** This is
     deliberately different from team login. Admins are a small,
     repeat-use group who need fast, dependency-free access during a live
@@ -88,16 +92,7 @@ team's job.
     team magic-links, but as a **distinct password-reset token flow**
     (separate token/table from the team login token — one logs you in
     directly, the other lets you set a new password).
-  - **No backup codes for admins.** Backup codes are team-only. Password
-    + self-serve email reset was judged sufficient for admins; a backup
-    code would be a third fallback without meaningfully improving
-    reliability. May be revisited later as a future addition — not
-    currently in scope.
-  - This decision was made after the codebase had already drifted toward
-    magic-link for admins on its own (a stray `magicToken` field and a
-    comment reading "corrected: passwordless, same as teams" were found
-    in `AdminUser`, with no human sign-off). That drift is now
-    superseded — password-based login is final.
+  - **No backup codes for admins.** Backup codes are team-only.
 - **Repository & folder structure:** Private GitHub repo
   (`github.com/Cracked57-punk/Equinox`), `src/app` is the only routing
   tree (routes only — no logic). Server Actions live in `src/actions/`,
@@ -109,18 +104,14 @@ team's job.
   entered before Round 1 starts; admin checks off the 25 qualifiers after.
   No typing/parsing needed.
   - ❌ Rejected: CSV parsing, scraping quiz.com.
-- **Access tiers:**
-  - Tier 1 — Question contributors: Google Sheet edit access only, no
-    platform login.
-  - Tier 2 — Content admins: platform login limited to question-pool
-    import/preview.
-  - Tier 3 — Event admins: full control (team checklist, timer, round
-    start/stop, leaderboard).
-- **Admin Shell Pattern:** Incremental nav-per-phase architecture. The shell uses a single `nav-config.ts` source of truth. Nav items are rendered based on tier. Crucially, tier enforcement is handled server-side per route via `requireAdmin(minTier)`, ensuring proper distinction between "not logged in" (redirects to `/admin/login`) and "insufficient tier" (redirects to `/admin/access-denied`). Sections are added only when built; no pre-built placeholders.
+- **Access model:** Two roles only — **Team** (contestant) and **Admin**
+  (full access). Question contributors (previously "Tier 1") only interact
+  via Google Sheet edit access and never log into the platform.
+- **Admin Shell Pattern:** Incremental nav-per-phase architecture. The shell uses a single `nav-config.ts` source of truth. All nav items are visible to every admin. Auth enforcement is handled server-side per route via `requireAdmin()`, which redirects unauthenticated users to `/admin/login`. Sections are added only when built; no pre-built placeholders.
 - **Question pool:** Structured Google Sheet (question, 4 options, correct
   answer, solution/explanation, image links). Images in a shared Google
   Drive folder ("Anyone with link can view"). Multi-image questions use
-  comma-separated links in one cell. Import flow: Tier 2 admin imports via
+  comma-separated links in one cell. Import flow: admin imports via
   Google Sheets API, previews parsed result, confirms before it lands in
   Postgres.
 - **Exam UI:** JEE Mains/Advanced style — pooled (not per-question) timer,
@@ -145,8 +136,10 @@ team's job.
 - Magic-link login for admins (admins use email + password instead — see
   Section 2). Team magic-link is unaffected and correct — this rejection
   applies to admins only.
-- Shared tier-wide password for admins (must be individual accounts)
+- Shared password for admins (must be individual accounts)
 - Backup codes for admins (team-only mechanism)
+- Multi-tier admin hierarchy (Tier 2/Tier 3 — removed in favor of single
+  admin role with full access)
 
 ## 4. Open items still pending (ask the human, don't guess)
 
@@ -156,7 +149,6 @@ team's job.
 | Timing | Default time-per-question value |
 | Timing | Round start gate: all-logged-in vs manual trigger |
 | Question pool | Image naming convention (exact string) |
-| Access tiers | Tier 2 / Tier 3 exact headcount |
 
 ## 5. Out of scope for now (context only)
 

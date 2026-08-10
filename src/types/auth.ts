@@ -8,6 +8,5 @@ export interface AdminJwtPayload {
   adminId: string;
   name: string;
   email: string;
-  tier: number;
   type: 'admin';
 }

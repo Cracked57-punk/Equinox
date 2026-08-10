@@ -82,11 +82,10 @@ export async function requireTeam() {
 }
 
 /**
- * Validates the current admin session and ensures minimum tier requirement.
+ * Validates the current admin session.
  * Redirects to /admin/login if missing/invalid.
- * Redirects to /admin/access-denied if the authenticated admin does not meet minTier.
  */
-export async function requireAdmin(minTier?: number) {
+export async function requireAdmin() {
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_COOKIE_NAME)?.value;
 
@@ -97,10 +96,6 @@ export async function requireAdmin(minTier?: number) {
   const payload = await verifyAdminToken(token);
   if (!payload) {
     redirect('/admin/login');
-  }
-
-  if (minTier !== undefined && payload.tier < minTier) {
-    redirect('/admin/access-denied');
   }
 
   return payload;

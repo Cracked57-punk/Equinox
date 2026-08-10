@@ -26,11 +26,10 @@ async function main() {
       name: 'Super Admin',
       email: adminEmail,
       passwordHash,
-      tier: 3,
     },
   });
 
-  console.log('Created initial Tier 3 Admin:', admin.email);
+  console.log('Created initial Admin:', admin.email);
 
   const settings = await prisma.roundSettings.upsert({
     where: { id: 'singleton' },

@@ -16,10 +16,10 @@ just proceeding.
 |---|---|---|
 | 0. Planning | `format.md`, `Round2.md`, `PROJECT_CONTEXT.md` — scope, access tiers, data flows | ✅ Done |
 | 1. Scaffold + schema | Next.js project setup, Prisma schema (Team, AdminUser, Question, ExamSession, TeamQuestionAnswer, RoundSettings) | ✅ Done |
-| 2. Auth layer | Magic-link login (teams), email+password (admins), session guards (`requireTeam`, `requireAdmin`), backup codes (teams), Tier 2/3 enforcement | ✅ Done |
-| 3. Admin panel shell | Tier-gated navigation/layout shell and Dashboard (other sections added incrementally per phase) | ✅ Done |
+| 2. Auth layer | Magic-link login (teams), email+password (admins), session guards (`requireTeam`, `requireAdmin`), backup codes (teams) | ✅ Done |
+| 3. Admin panel shell | Admin navigation/layout shell and Dashboard | ✅ Done |
 | 4. Round 1→2 handoff | Pre-loaded 35-team checklist UI, split visual boxes for qualifiers/disqualified, confirm-to-lock action | ✅ Done |
-| 5. Question pool import | Google Sheets URL parsing, parse preview table, manual Question CRUD (add/edit/delete), Tier 2 confirm-to-commit | ✅ Done |
+| 5. Question pool import | Google Sheets URL parsing, parse preview table, manual Question CRUD (add/edit/delete), confirm-to-commit | ✅ Done |
 | 6. Exam session engine | Server-side random question assignment per team, pooled timer logic, admin-editable time-per-question, session persistence | 🔶 Up next |
 | 7. Exam UI | JEE-style interface — free navigation, palette, skip/clear, force-submit on timeout | ⬜ Not started |
 | 8. Scoring engine | +20/0 marking logic, answer submission handling | ⬜ Not started |
@@ -41,7 +41,6 @@ still unresolved:
 | Exact questions-per-team count (placeholder: 10) | 6. Exam session engine | Pending |
 | Default time-per-question value | 6. Exam session engine | Pending (admin-editable regardless of default) |
 | Round start gate: all-logged-in vs manual trigger | 10. Live admin controls | Pending |
-| Tier 2 / Tier 3 exact headcount | 3. Admin panel shell (informs seed data) | Pending |
 
 Full detail on each of these lives in `Round2.md`, Section 8.
 
