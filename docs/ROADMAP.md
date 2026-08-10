@@ -20,11 +20,11 @@ just proceeding.
 | 3. Admin panel shell | Admin navigation/layout shell and Dashboard | ✅ Done |
 | 4. Round 1→2 handoff | Pre-loaded 35-team checklist UI, split visual boxes for qualifiers/disqualified, confirm-to-lock action | ✅ Done |
 | 5. Question pool import | Google Sheets URL parsing, parse preview table, manual Question CRUD (add/edit/delete), confirm-to-commit | ✅ Done |
-| 6. Exam session engine | Server-side random question assignment per team, pooled timer logic, admin-editable time-per-question, session persistence | 🔶 Up next |
-| 7. Exam UI | JEE-style interface — free navigation, palette, skip/clear, force-submit on timeout | ⬜ Not started |
-| 8. Scoring engine | +20/0 marking logic, answer submission handling | ⬜ Not started |
-| 9. Live leaderboard | Polling-based live updates, Round 2 scores only | ⬜ Not started |
-| 10. Live admin controls | Round-start trigger (all-logged-in vs manual gate), live timer/monitoring dashboard | ⬜ Not started |
+| 6. Exam session engine | Server-side random question assignment per team, pooled timer logic, admin-editable time-per-question, session persistence | ✅ Done |
+| 7. Exam UI | JEE-style interface — free navigation, palette, skip/clear, force-submit on timeout | ✅ Done |
+| 8. Scoring engine | +20/0 marking logic, answer submission handling | ✅ Done |
+| 9. Live leaderboard | Polling-based live updates, Round 2 scores only | 🔶 Up next |
+| 10. Live admin controls | Round-start trigger (all-logged-in vs manual gate), live timer/monitoring dashboard | 🔶 Up next |
 | 11. Testing & rehearsal | Full dry-run with test teams, load-check polling under 25 concurrent teams, Vercel env setup | ⬜ Not started |
 | 12. Event-day support | On-call plan for live issues, rollback plan | ⬜ Not started |
 

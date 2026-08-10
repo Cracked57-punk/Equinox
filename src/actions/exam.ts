@@ -43,6 +43,14 @@ export async function initializeExamSession() {
     return { success: true, session: existing };
   }
 
+  // Check if team is qualified
+  const teamRecord = await prisma.team.findUnique({
+    where: { id: team.id }
+  });
+  if (!teamRecord || !teamRecord.qualified) {
+    return { success: false, error: 'Team is not qualified for this round.' };
+  }
+
   // Get round settings
   const settings = await prisma.roundSettings.findUnique({
     where: { id: 'singleton' }
@@ -62,8 +70,12 @@ export async function initializeExamSession() {
     return { success: false, error: 'No questions available.' };
   }
 
-  // Shuffle and pick N questions
-  const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+  // Fisher-Yates shuffle
+  const shuffled = [...allQuestions];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
   const selectedQuestions = shuffled.slice(0, settings.questionsPerTeam);
 
   // Calculate times
@@ -129,20 +141,50 @@ export async function submitExam(autoSubmitted = false) {
   const team = await requireTeam();
 
   const session = await prisma.examSession.findUnique({
-    where: { teamId: team.id }
+    where: { teamId: team.id },
+    include: {
+      answers: {
+        include: {
+          question: {
+            select: { correctAnswer: true }
+          }
+        }
+      }
+    }
   });
 
   if (!session || session.submitted) {
     return { success: false, error: 'Already submitted or not found' };
   }
 
-  await prisma.examSession.update({
-    where: { id: session.id },
-    data: {
-      submitted: true,
-      submittedAt: new Date(),
-      autoSubmitted,
+  let totalScore = 0;
+
+  await prisma.$transaction(async (tx) => {
+    for (const answer of session.answers) {
+      let isCorrect = null;
+      
+      if (answer.selected) {
+        isCorrect = answer.selected === answer.question.correctAnswer;
+        if (isCorrect) {
+          totalScore += 20;
+        }
+      }
+
+      await tx.teamQuestionAnswer.update({
+        where: { id: answer.id },
+        data: { isCorrect }
+      });
     }
+
+    await tx.examSession.update({
+      where: { id: session.id },
+      data: {
+        submitted: true,
+        submittedAt: new Date(),
+        autoSubmitted,
+        score: totalScore,
+      }
+    });
   });
 
   return { success: true };

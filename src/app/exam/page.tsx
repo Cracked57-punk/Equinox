@@ -43,9 +43,15 @@ export default async function ExamPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-black text-white">
         <h1 className="text-3xl font-bold mb-4">Exam Submitted</h1>
-        <p className="text-gray-400">
-          Your responses have been recorded. Thank you!
+        <p className="text-gray-400 mb-8">
+          Your responses have been recorded. Waiting for results...
         </p>
+        <a 
+          href="/exam/leaderboard" 
+          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-md font-bold transition-colors shadow-[0_0_15px_rgba(79,70,229,0.5)]"
+        >
+          View Live Leaderboard
+        </a>
       </div>
     );
   }

@@ -16,5 +16,12 @@ export const adminNavConfig: NavItem[] = [
     label: 'Team Qualifiers',
     href: '/admin/qualifiers',
   },
-  // Future phases will add Timer Settings, Round Control, and Leaderboard here.
-];
+  {
+    label: 'Round Control',
+    href: '/admin/controls',
+  },
+  {
+    label: 'Leaderboard',
+    href: '/admin/leaderboard',
+  },
+]

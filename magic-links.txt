@@ -1,0 +1,5 @@
+
+================ MAGIC LINK EMAIL (DEV MODE) ================
+To: team1@enigma.club (Team: Team 1)
+Magic Link URL: http://localhost:3000/api/auth/verify?token=f6e36ab5d4c92b4ce687f35f3841615c46fe0a2999aa0dc54555e8cef7558637&email=team1%40enigma.club
+=============================================================

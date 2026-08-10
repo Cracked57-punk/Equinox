@@ -21,10 +21,13 @@ export async function sendMagicLinkEmail({
 }: SendMagicLinkOptions): Promise<{ success: boolean; error?: string }> {
   // If Resend API key is not configured, log to console for local development testing.
   if (!resend) {
-    console.log('\n================ MAGIC LINK EMAIL (DEV MODE) ================');
-    console.log(`To: ${to} (Team: ${teamName})`);
-    console.log(`Magic Link URL: ${magicLinkUrl}`);
-    console.log('=============================================================\n');
+    const logText = `\n================ MAGIC LINK EMAIL (DEV MODE) ================\nTo: ${to} (Team: ${teamName})\nMagic Link URL: ${magicLinkUrl}\n=============================================================\n`;
+    console.log(logText);
+    
+    // Also write it to a file so the user absolutely doesn't miss it!
+    const fs = require('fs');
+    fs.appendFileSync('magic-links.txt', logText);
+    
     return { success: true };
   }
 
