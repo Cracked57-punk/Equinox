@@ -23,7 +23,7 @@ export async function loginAdmin(email: string, password: string) {
   const passwordMatch = await bcrypt.compare(password, admin.passwordHash);
 
   if (!passwordMatch) {
-    return { success: false, error: 'Invalid email or password.' };
+    return { success: false, error: 'Wrong password.' };
   }
 
   await setAdminSession({

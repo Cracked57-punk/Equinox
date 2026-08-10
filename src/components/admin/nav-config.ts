@@ -9,19 +9,19 @@ export const adminNavConfig: NavItem[] = [
     href: '/admin/dashboard',
   },
   {
-    label: 'Question Pool',
-    href: '/admin/pool',
-  },
-  {
     label: 'Team Qualifiers',
     href: '/admin/qualifiers',
   },
   {
-    label: 'Round Control',
+    label: 'Round 2',
     href: '/admin/controls',
+  },
+  {
+    label: 'Question Pool',
+    href: '/admin/pool',
   },
   {
     label: 'Leaderboard',
     href: '/admin/leaderboard',
   },
-]
+];

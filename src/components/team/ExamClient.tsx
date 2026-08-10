@@ -116,7 +116,7 @@ export function ExamClient({ initialSession, teamName }: { initialSession: any; 
     }
   };
 
-  const handleSaveAndNext = () => {
+  const handleSaveAndNext = async () => {
     // If it's currently marked, unmark it when clicking save and next
     let newStatus = currentAnswer.status;
     if (currentAnswer.selected) {
@@ -124,9 +124,11 @@ export function ExamClient({ initialSession, teamName }: { initialSession: any; 
     } else {
       newStatus = 'not_answered';
     }
-    updateAnswerState(currentIndex, currentAnswer.selected, newStatus);
+    await updateAnswerState(currentIndex, currentAnswer.selected, newStatus);
     
-    if (currentIndex < answers.length - 1) {
+    if (currentIndex === answers.length - 1) {
+      await handleManualSubmit();
+    } else if (currentIndex < answers.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -275,12 +277,21 @@ export function ExamClient({ initialSession, teamName }: { initialSession: any; 
                   Mark for Review & Next
                 </button>
               </div>
-              <button 
-                onClick={handleSaveAndNext}
-                className="px-8 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-md font-medium shadow-sm"
-              >
-                Save & Next
-              </button>
+              {currentIndex === answers.length - 1 ? (
+                <button 
+                  onClick={handleSaveAndNext}
+                  className="px-8 py-2 bg-red-600 text-white hover:bg-red-700 rounded-md font-medium shadow-sm transition-colors"
+                >
+                  Save & Submit
+                </button>
+              ) : (
+                <button 
+                  onClick={handleSaveAndNext}
+                  className="px-8 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-md font-medium shadow-sm transition-colors"
+                >
+                  Save & Next
+                </button>
+              )}
             </div>
           </div>
         </div>
