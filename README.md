@@ -4,7 +4,7 @@ Live team-contest platform for Enigma's Round 2. Built for real-time exam admini
 
 ---
 
-## 🏗️ Architecture & Technologies Used
+## Architecture & Technologies Used
 
 Equinox is built on a modern, full-stack React framework optimized for speed, security, and developer experience. 
 
@@ -24,7 +24,7 @@ Equinox is built on a modern, full-stack React framework optimized for speed, se
 
 ---
 
-## 📁 Optimal Folder Structure
+## Optimal Folder Structure
 
 The project is deliberately structured following the absolute best practices of the Next.js App Router. This keeps the codebase highly predictable and easy to read for any developer.
 
@@ -57,7 +57,7 @@ Equinox/
 
 ---
 
-## 🚀 Setup & Deployment
+## Setup & Deployment
 
 1. **Install dependencies**
    \`\`\`bash
